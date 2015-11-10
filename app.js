@@ -6,8 +6,8 @@
 var express = require('express'),
   bodyParser = require('body-parser'),
   methodOverride = require('method-override'),
-  errorHandler = require('error-handler'),
   morgan = require('morgan'),
+  errorHandler = require('errorhandler'),
   routes = require('./routes'),
   api = require('./routes/api'),
   http = require('http'),
@@ -25,17 +25,16 @@ app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(morgan('dev'));
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(methodOverride());
 app.use(express.static(path.join(__dirname, 'public')));
 
 var env = process.env.NODE_ENV || 'development';
-
 // development only
 if (env === 'development') {
-  app.use(errorHandler);
+ app.use(errorHandler());
 }
-
 // production only
 if (env === 'production') {
   // TODO

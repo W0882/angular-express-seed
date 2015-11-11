@@ -1,65 +1,60 @@
-
-/**
- * Module dependencies
- */
-
 var express = require('express'),
   bodyParser = require('body-parser'),
   methodOverride = require('method-override'),
-  morgan = require('morgan'),
-  errorHandler = require('errorhandler'),
-  routes = require('./routes'),
-  api = require('./routes/api'),
-  http = require('http'),
+  logger = require('morgan'),
+  cookieParser = require('cookie-parser'),
   path = require('path');
 
-var app = module.exports = express();
+var routes = require('./routes');
+var api = require('./routes/api');
 
-
+var app = express();
 /**
  * Configuration
  */
-
-// all environments
-app.set('port', process.env.PORT || 3000);
-app.set('views', __dirname + '/views');
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-app.use(morgan('dev'));
+// uncomment after placing your favicon in /public
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
 app.use(methodOverride());
 app.use(express.static(path.join(__dirname, 'public')));
 
-var env = process.env.NODE_ENV || 'development';
-// development only
-if (env === 'development') {
- app.use(errorHandler());
-}
-// production only
-if (env === 'production') {
-  // TODO
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: err
+    });
+  });
 }
 
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
+});
 
 /**
  * Routes
  */
-
 // serve index and view partials
 app.get('/', routes.index);
 app.get('/partials/:name', routes.partials);
-
 // JSON API
 app.get('/api/name', api.name);
-
 // redirect all others to the index (HTML5 history)
 app.get('*', routes.index);
 
-
-/**
- * Start Server
- */
-
-http.createServer(app).listen(app.get('port'), function () {
-  console.log('Express server listening on port ' + app.get('port'));
-});
+module.exports = app;

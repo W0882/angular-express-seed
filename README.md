@@ -23,7 +23,7 @@ Clone the angular-express-seed repository, run `npm install` to grab the depende
 
 Runs like a typical express app:
 
-    node app.js
+    node ./bin/www
 
 ### Running tests
 
@@ -35,7 +35,7 @@ Just fetch the changes and merge them into your project with git.
 
 
 ## Directory Layout
-    
+
     app.js              --> app config
     package.json        --> for npm
     public/             --> all of the files to be used in on the client side
